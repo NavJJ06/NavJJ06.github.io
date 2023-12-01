@@ -37,6 +37,27 @@
         const dateTime = document.getElementById("curDateTime");
 
         // Use the fetch function to make a GET request
+        fetch('https://blr1.blynk.cloud/external/api/isHardwareConnected?token=Ns1hwh3q5Ujj2A_-SS6avY4dgSJo3a7q')
+        .then(response => {
+        if (!response.ok) {
+            // Handle error if the response status is not in the range 200-299
+            throw new Error('Network response was not ok');
+        }
+        return response.json(); // Parse the response body as JSON
+        })
+        .then(data => {
+        // Handle the parsed data here
+        if(data == false){
+            numVisitors.innerHTML = "Device Offline";
+            return;
+        }
+        })
+        .catch(error => {
+        // Handle any errors that occurred during the fetch
+        console.error('Fetch error:', error);
+        });
+
+        // Use the fetch function to make a GET request
         fetch('https://blr1.blynk.cloud/external/api/get?token=Ns1hwh3q5Ujj2A_-SS6avY4dgSJo3a7q&v3')
         .then(response => {
         if (!response.ok) {
