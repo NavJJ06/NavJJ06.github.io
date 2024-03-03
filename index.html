@@ -12,7 +12,7 @@
     <style>
         body {
             font-family: 'Lato', sans-serif;
-            background-color: #dbdbdb;
+            background-color: #ebeaea;
             padding: 10px;
         }
 
@@ -25,6 +25,13 @@
             border-radius: 10px;
             padding: 20px;
         }
+
+        canvas {
+            max-width: 650px;
+            margin-top: 20px;
+            margin-left:500px;
+            background-color: rgb(255, 255, 255);
+        }
     </style>
 </head>
 
@@ -35,6 +42,9 @@
         <h3 id="curDateTime">Current date/time is:</h3>
     </div>
 
+    <canvas id="occupancyChart"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         function updateData() {
             const numVisitors = document.getElementById("numVisitors");
@@ -78,6 +88,9 @@
                     }
                     numVisitors.innerHTML = temp;
                     dateTime.innerHTML = "Current date/time is: " + new Date().toLocaleString();
+                    
+                    // Update chart data
+                    updateChart(temp);
                 })
                 .catch(error => {
                     // Handle any errors that occurred during the fetch
@@ -89,6 +102,65 @@
             updateData();
             setInterval(updateData, 5000);
         }
+
+        let occupancyChart;
+
+        function createChart() {
+            const ctx = document.getElementById('occupancyChart').getContext('2d');
+            occupancyChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Occupancy Trends',
+                        data: [],
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        yAxes: [{
+                            display: true,
+                            ticks: {
+                                    beginAtZero: false,
+                                    min: 0,
+                                    steps: 1,
+                                    stepSize: 1,
+                                
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'No. of Occupants'
+                                }
+                        }]
+                    },
+                    
+                }
+            });
+        }
+
+        function updateChart(data) {
+            // Update chart data
+            const time = new Date().toLocaleTimeString();
+            occupancyChart.data.labels.push(time);
+            occupancyChart.data.datasets[0].data.push(data);
+
+            // Limit the number of data points shown to 10 for better readability
+            if (occupancyChart.data.labels.length > 10) {
+                occupancyChart.data.labels.shift();
+                occupancyChart.data.datasets[0].data.shift();
+            }
+
+            // Update chart
+            occupancyChart.update();
+        }
+
+        // Create the chart when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            createChart();
+        });
     </script>
 </body>
 </html>
